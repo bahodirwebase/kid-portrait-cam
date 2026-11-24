@@ -85,6 +85,14 @@ export function usePortraitCamera(video: Ref<HTMLVideoElement | null>, rules: Re
     stopStream()
     status.value = 'loading'
     error.value = ''
+    // http://192.168.x.x kabi xavfsiz bo'lmagan manzilda brauzer mediaDevices'ni umuman bermaydi.
+    if (!navigator.mediaDevices?.getUserMedia) {
+      status.value = 'error'
+      error.value = window.isSecureContext
+        ? "Bu brauzer kamerani qo'llab-quvvatlamaydi."
+        : "Kamera faqat xavfsiz manzilda ishlaydi: sahifani https:// orqali (yoki shu kompyuterda localhost'da) oching."
+      return
+    }
     try {
       stream = await navigator.mediaDevices.getUserMedia({
         // 1275 px balandlikdagi natija uchun yuqori o'lcham so'raladi; bermasa kamera o'zinikini beradi.
@@ -99,10 +107,15 @@ export function usePortraitCamera(video: Ref<HTMLVideoElement | null>, rules: Re
       loop(detector)
     } catch (e) {
       status.value = 'error'
+      const name = e instanceof DOMException ? e.name : ''
       error.value =
-        e instanceof DOMException && e.name === 'NotAllowedError'
+        name === 'NotAllowedError'
           ? 'Kameraga ruxsat berilmadi. Brauzer sozlamalarida ruxsat bering.'
-          : `Kamerani ishga tushirib bo'lmadi: ${(e as Error).message}`
+          : name === 'NotFoundError' || name === 'OverconstrainedError'
+            ? 'Qurilmada kamera topilmadi.'
+            : name === 'NotReadableError'
+              ? "Kamera band — uni ishlatayotgan boshqa dasturni yoping."
+              : `Kamerani ishga tushirib bo'lmadi: ${(e as Error).message}`
     }
   }
 
