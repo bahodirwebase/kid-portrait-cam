@@ -1,0 +1,4 @@
+node_modules
+dist
+# postinstall node_modules'dan nusxalaydi (~30 MB)
+public/mediapipe

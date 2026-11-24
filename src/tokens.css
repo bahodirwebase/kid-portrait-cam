@@ -1,0 +1,13 @@
+/* Rang tokenlari — loyihadagi yagona hex manbai (komponentlar faqat var(--…) ishlatadi). */
+:root {
+  --bg: #f5f6f8; /* design-ok: token manbai */
+  --text: #1d2433; /* design-ok: token manbai */
+  --muted: #667085; /* design-ok: token manbai */
+  --border: #d0d5dd; /* design-ok: token manbai */
+  --surface: #ffffff; /* design-ok: token manbai */
+  --black: #000000; /* design-ok: token manbai */
+  --success: #12b76a; /* design-ok: token manbai */
+  --danger: #b42318; /* design-ok: token manbai */
+  --primary: #1570ef; /* design-ok: token manbai */
+  --overlay: rgba(0, 0, 0, 0.6);
+}
