@@ -18,13 +18,17 @@ const ageGroup = computed(() =>
 const video = ref<HTMLVideoElement | null>(null)
 const { status, error, checks, progress, facing, photo, start, retake, switchCamera } = usePortraitCamera(video, rules)
 
-const LABELS: Record<CheckKey, string> = {
-  oneFace: 'Kadrda faqat bitta yuz',
-  faceSize: "Yuz o'lchami: kadr balandligining 15–95%",
-  centered: 'Yuz markazda (22% ichida)',
-  eyesOpen: "Ikkala ko'z ochiq",
-}
 const pct = (v: number) => `${Math.round(v * 100)}%`
+const labels = computed<Record<CheckKey, string>>(() => ({
+  oneFace: 'Kadrda faqat bitta yuz',
+  faceSize: `Yuz o'lchami: kadr balandligining ${pct(rules.value.minFaceHeight)}–${pct(rules.value.maxFaceHeight)}`,
+  centered: `Yuz markazda (${pct(rules.value.maxCenterOffset)} ichida)`,
+  eyesOpen: `Ikkala ko'z ochiq (≥ ${pct(rules.value.minEyeOpen)})`,
+  headTilt: `Bosh tekis (qiyalik ≤ ${rules.value.maxHeadTiltDeg}°)`,
+  mouth: "Og'iz yopiq / neytral",
+  lighting: "Yorug'lik yetarli",
+  blur: 'Tasvir aniq (xira emas)',
+}))
 const ruleNote = computed(
   () =>
     `Yuz ${pct(rules.value.minFaceHeight)}–${pct(rules.value.maxFaceHeight)}, markazdan ±${pct(rules.value.maxCenterOffset)}, ko'z ochiqligi ≥ ${pct(rules.value.minEyeOpen)}`,
@@ -58,7 +62,7 @@ onMounted(start)
 
     <ul v-if="status === 'ready'" class="checks">
       <li v-for="k in CHECKS" :key="k" :class="checks[k] ? 'pass' : 'fail'">
-        <span class="mark">{{ checks[k] ? '✓' : '✗' }}</span>{{ LABELS[k] }}
+        <span class="mark">{{ checks[k] ? '✓' : '✗' }}</span>{{ labels[k] }}
       </li>
     </ul>
     <p v-if="status === 'ready'" class="muted">Hammasi yashil bo'lib turganda surat avtomatik olinadi.</p>
